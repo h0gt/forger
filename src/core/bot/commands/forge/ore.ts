@@ -40,7 +40,6 @@ createApplicationCommand({
         ?.find((opt) => opt.focused)
         ?.value?.toString()
         .toLowerCase() ?? '';
-
     const res = await makeRequest('http://localhost:9999/ores', {
       method: RequestMethod.GET,
       response: ResponseType.JSON,
@@ -48,11 +47,9 @@ createApplicationCommand({
         'x-api-key': FORGER_API_KEY,
       },
     });
-
     const choices = res
       .filter((ore: any) => {
         if (!focused) return true;
-
         return ore.name.toLowerCase().includes(focused);
       })
       .slice(0, 25)
@@ -60,7 +57,6 @@ createApplicationCommand({
         name: ore.name,
         value: ore.name,
       }));
-
     return interaction.respond({ choices });
   },
   async run(bot, interaction, options) {
@@ -95,23 +91,78 @@ createApplicationCommand({
                 },
               },
             },
-            {
-              type: MessageComponentTypes.ActionRow,
-              components: [
-                {
-                  type: MessageComponentTypes.StringSelect,
-                  customId: 'ore-location',
-                  placeholder: 'Obtainable From:',
-                  options: res.from.flatMap((item: any) =>
-                    item.world.map((world: string) => ({
-                      label: world,
-                      value: world,
-                      description: truncate(item.rock.join(', '), 100),
-                    })),
-                  ),
-                },
-              ],
-            },
+            ...(res.from.some((s) => s.source === 'Rock')
+              ? [
+                  {
+                    type: MessageComponentTypes.TextDisplay,
+                    content: '**Rock:**',
+                  },
+                  {
+                    type: MessageComponentTypes.ActionRow,
+                    components: [
+                      {
+                        type: MessageComponentTypes.StringSelect,
+                        customId: 'ore-rock',
+                        placeholder: 'Mineable From:',
+                        options: res.from
+                          .filter((s) => s.source === 'Rock')
+                          .flatMap((item) =>
+                            (item.world ?? []).map((world) => ({
+                              label: world,
+                              value: world,
+                              description: truncate(item.rock?.join(', ') ?? '', 100),
+                            })),
+                          ),
+                      },
+                    ],
+                  },
+                ]
+              : []),
+            ...(res.from.some((s) => s.source === 'Enemy')
+              ? [
+                  {
+                    type: MessageComponentTypes.TextDisplay,
+                    content: '**Enemy:**',
+                  },
+                  {
+                    type: MessageComponentTypes.ActionRow,
+                    components: [
+                      {
+                        type: MessageComponentTypes.StringSelect,
+                        customId: 'ore-enemy',
+                        placeholder: 'Obtainable From:',
+                        options: res.from
+                          .filter((s) => s.source === 'Enemy')
+                          .flatMap((item) =>
+                            (item.world ?? []).map((world) => ({
+                              label: world,
+                              value: world,
+                              description: truncate(
+                                [item.enemy?.join(', '), item.drop_chance != null ? `${item.drop_chance}% drop` : null]
+                                  .filter(Boolean)
+                                  .join(' — '),
+                                100,
+                              ),
+                            })),
+                          ),
+                      },
+                    ],
+                  },
+                ]
+              : []),
+            ...(res.from.some((s) => s.source === 'Crafting')
+              ? [
+                  {
+                    type: MessageComponentTypes.TextDisplay,
+                    content: `**Craft:**\n${res.from
+                      .filter((s) => s.source === 'Crafting')
+                      .flatMap((item) =>
+                        Object.entries(item.recipe ?? {}).map(([name, qty]) => `- ${qty}x **${name}**`),
+                      )
+                      .join('\n')}`,
+                  },
+                ]
+              : []),
             {
               type: MessageComponentTypes.Separator,
             },
