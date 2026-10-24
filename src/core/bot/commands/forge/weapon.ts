@@ -1,3 +1,4 @@
+import { weaponLocationComponents } from './weaponPresentation';
 import { FORGER_API_KEY } from 'core/variables';
 import {
   ApplicationCommandOptionTypes,
@@ -91,26 +92,13 @@ createApplicationCommand({
                 },
               },
             },
-            {
-              type: MessageComponentTypes.ActionRow,
-              components: [
-                {
-                  type: MessageComponentTypes.StringSelect,
-                  customId: 'weapon-location',
-                  placeholder: 'Obtainable From:',
-                  options: res.from.map((item: any) => ({
-                    label: item,
-                    value: item.toLowerCase().replace(/\s+/g, '_'),
-                  })),
-                },
-              ],
-            },
+            ...weaponLocationComponents(res.from),
             {
               type: MessageComponentTypes.Separator,
             },
             {
               type: MessageComponentTypes.TextDisplay,
-              content: `## Information:\n- Damage: **${res.damage}**\n- Index Speed: **${res.index_speed ?? res.attack_speed}s**
+              content: `## Information:\n${res.requires_recipe ? '- Requires unlocked recipe\n' : ''}- Damage: **${res.damage}**\n- Index Speed: **${res.index_speed ?? res.attack_speed}s**
 - Real Speed: **${res.real_speed ?? res.attack_speed}s**\n- Damage Per Second: **${res.damage_per_second}**\n- Range: **${res.attack_range} studs**\n- Chance: **${res.chance}**\n- Minimum Ore Requirement: **${res.min_ores}**\n- Base Price: **${res.base_price}**`,
             },
           ],

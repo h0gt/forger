@@ -39,7 +39,7 @@ export function registerForgeV2({ handlers, selections, interaction, ores }: For
   const oreBrowseState = new Map<number, OreBrowseState>();
   const ORE_PAGE_SIZE = 25;
   const ALL_ORES_WORLD = '__all_ores__';
-  const ORE_WORLDS = ["Stonewake's Cross", 'Forgotten Kingdom', 'Frostspire Expanse', 'Crimson Sakura'];
+  const ORE_WORLDS = ["Stonewake's Cross", 'Forgotten Kingdom', 'Frostspire Expanse', 'Crimson Sakura', 'Guild Island'];
 
   const getEquipmentCatalog = async (equipmentType: string) =>
     makeRequest(equipmentType === 'Weapon' ? 'http://localhost:9999/weapons' : 'http://localhost:9999/armors', {
@@ -1193,7 +1193,7 @@ export function registerForgeV2({ handlers, selections, interaction, ores }: For
                   type: MessageComponentTypes.StringSelect,
                   customId: 'v2-chances-world',
                   placeholder: `World: ${data.world ?? "Stonewake's Cross"}`,
-                  options: ["Stonewake's Cross", 'Forgotten Kingdom', 'Frostspire Expanse', 'Crimson Sakura'].map(
+                  options: ["Stonewake's Cross", 'Forgotten Kingdom', 'Frostspire Expanse', 'Crimson Sakura', 'Guild Island'].map(
                     (world) => ({
                       label: world,
                       value: world,
@@ -2428,7 +2428,7 @@ export function registerForgeV2({ handlers, selections, interaction, ores }: For
             type: MessageComponentTypes.StringSelect,
             customId: 'v2-profile-world',
             placeholder: profile?.defaultWorld ?? "Stonewake's Cross",
-            options: ["Stonewake's Cross", 'Forgotten Kingdom', 'Frostspire Expanse', 'Crimson Sakura'].map(
+            options: ["Stonewake's Cross", 'Forgotten Kingdom', 'Frostspire Expanse', 'Crimson Sakura', 'Guild Island'].map(
               (world) => ({
                 label: world,
                 value: world,
